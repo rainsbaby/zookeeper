@@ -105,6 +105,7 @@ public class Observer extends Learner {
         boolean completedSync = false;
         try {
             self.setZabState(QuorumPeer.ZabState.DISCOVERY);
+            //根据配置选择Leader或LearnerMaster，建立连接
             QuorumServer master = findLearnerMaster();
             try {
                 connectToLeader(master.addr, master.hostname);
@@ -115,12 +116,14 @@ public class Observer extends Learner {
                 }
 
                 self.setLeaderAddressAndId(master.addr, master.getId());
-                self.setZabState(QuorumPeer.ZabState.SYNCHRONIZATION);
+                self.setZabState(QuorumPeer.ZabState.SYNCHRONIZATION);  //ZabState.SYNCHRONIZATION
+                //todo ？？
                 syncWithLeader(newLeaderZxid);
-                self.setZabState(QuorumPeer.ZabState.BROADCAST);
+                self.setZabState(QuorumPeer.ZabState.BROADCAST);        //QuorumPeer.ZabState.BROADCAST
                 completedSync = true;
                 QuorumPacket qp = new QuorumPacket();
                 while (this.isRunning() && nextLearnerMaster.get() == null) {
+                    //处理leader或LearnerMaster端请求
                     readPacket(qp);
                     processPacket(qp);
                 }

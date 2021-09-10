@@ -50,7 +50,7 @@ public class FLETestUtils extends ZKTestCase {
                 Vote v = null;
                 peer.setPeerState(ServerState.LOOKING);
                 LOG.info("Going to call leader election: {}", i);
-                v = peer.getElectionAlg().lookForLeader();
+                v = peer.getElectionAlg().lookForLeader();//触发选举
 
                 if (v == null) {
                     fail("Thread " + i + " got a null vote");

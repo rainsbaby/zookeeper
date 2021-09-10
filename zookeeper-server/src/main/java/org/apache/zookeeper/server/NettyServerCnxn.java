@@ -433,6 +433,8 @@ public class NettyServerCnxn extends ServerCnxn {
     }
 
     /**
+     * 接收消息
+     *
      * Receive a message, which can come from the queued buffer or from a new
      * buffer coming in over the channel. This should only be called from the
      * event loop thread.

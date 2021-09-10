@@ -537,6 +537,8 @@ public class Learner {
     }
 
     /**
+     * 从Leader端读取数据进行同步，有DIFF/SNAP/TRUNC多种同步方式
+     * 收到Leader端发的 Leader.UPTODATE 通知时，表示同步完成，可以开始服务。此时ACK新的Leader，并开始对外提供服务
      * Finally, synchronize our history with the Leader (if Follower)
      * or the LearnerMaster (if Observer).
      * @param newLeaderZxid
@@ -569,6 +571,7 @@ public class Learner {
                     snapshotNeeded = false;
                 }
             } else if (qp.getType() == Leader.SNAP) {
+                //leader发送整个snapshot到learner端，learner读取后加载到zkdatabase中
                 self.setSyncMode(QuorumPeer.SyncMode.SNAP);
                 LOG.info("Getting a snapshot from leader 0x{}", Long.toHexString(qp.getZxid()));
                 // The leader is going to dump the database
@@ -714,7 +717,7 @@ public class Learner {
                     }
 
                     break;
-                case Leader.UPTODATE:
+                case Leader.UPTODATE: //标志learner已经与leader达到一致，可以开始对外服务了
                     LOG.info("Learner received UPTODATE message");
                     if (newLeaderQV != null) {
                         boolean majorChange = self.processReconfig(newLeaderQV, null, null, true);
@@ -769,6 +772,7 @@ public class Learner {
             }
         }
         ack.setZxid(ZxidUtils.makeZxid(newEpoch, 0));
+        //ack Leader
         writePacket(ack, true);
         zk.startServing();
         /*

@@ -588,7 +588,7 @@ public class Leader extends LearnerMaster {
         zk.registerJMX(new LeaderBean(this, zk), self.jmxLocalPeerBean);
 
         try {
-            self.setZabState(QuorumPeer.ZabState.DISCOVERY);
+            self.setZabState(QuorumPeer.ZabState.DISCOVERY);  //ZabState  ELECTION -> DISCOVERY
             self.tick.set(0);
             zk.loadData();
 
@@ -596,6 +596,7 @@ public class Leader extends LearnerMaster {
 
             // Start thread that waits for connection requests from
             // new followers.
+            //选举完成后，由follower主动连接leader？
             cnxAcceptor = new LearnerCnxAcceptor();
             cnxAcceptor.start();
 
@@ -654,12 +655,13 @@ public class Leader extends LearnerMaster {
             // us. We do this by waiting for the NEWLEADER packet to get
             // acknowledged
 
+            //超过半数follower ack新的epoch
             waitForEpochAck(self.getId(), leaderStateSummary);
             self.setCurrentEpoch(epoch);
             self.setLeaderAddressAndId(self.getQuorumAddress(), self.getId());
-            self.setZabState(QuorumPeer.ZabState.SYNCHRONIZATION);
+            self.setZabState(QuorumPeer.ZabState.SYNCHRONIZATION);  //ZabState -> SYNCHRONIZATION
 
-            try {
+            try {//超过半数follower ack新的leader
                 waitForNewLeaderAck(self.getId(), zk.getZxid());
             } catch (InterruptedException e) {
                 shutdown("Waiting for a quorum of followers, only synced with sids: [ "
@@ -709,7 +711,7 @@ public class Leader extends LearnerMaster {
                 self.setZooKeeperServer(zk);
             }
 
-            self.setZabState(QuorumPeer.ZabState.BROADCAST);
+            self.setZabState(QuorumPeer.ZabState.BROADCAST);    //ZabState -> BROADCAST
             self.adminServer.setZooKeeperServer(zk);
 
             // We ping twice a tick, so we only update the tick every other
@@ -757,6 +759,7 @@ public class Leader extends LearnerMaster {
                         break;
                     }
 
+                    //检查是否还是leader
                     if (!tickSkip && !syncedAckSet.hasAllQuorums()) {
                         // Lost quorum of last committed and/or last proposed
                         // config, set shutdown flag

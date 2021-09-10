@@ -28,7 +28,11 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import org.junit.jupiter.api.Test;
+import sun.nio.ch.ThreadPool;
 
 // TODO: introduce JuteTestCase as in ZKTestCase
 
@@ -54,7 +58,7 @@ public class BinaryInputArchiveTest {
 
     private void checkWriterAndReader(TestWriter writer, TestReader reader) {
         TestCheckWriterReader.checkWriterAndReader(
-                BinaryOutputArchive::getArchive,
+                strm -> BinaryOutputArchive.getArchive(strm),
                 BinaryInputArchive::getArchive,
                 writer,
                 reader
@@ -65,13 +69,11 @@ public class BinaryInputArchiveTest {
     public void testInt() {
         final int expected = 4;
         final String tag = "tag1";
-        checkWriterAndReader(
-                (oa) -> oa.writeInt(expected, tag),
+        checkWriterAndReader((oa) -> oa.writeInt(expected, tag),
                 (ia) -> {
                     int actual = ia.readInt(tag);
                     assertEquals(expected, actual);
-                }
-        );
+                });
     }
 
     @Test
@@ -195,4 +197,9 @@ public class BinaryInputArchiveTest {
     return buf.array();
   }
 
+  @Test
+  public void testRunnable(){
+      ExecutorService pool = Executors.newCachedThreadPool();
+      pool.submit(() -> System.out.println(11));
+  }
 }

@@ -43,8 +43,10 @@ public class WatchManager implements IWatchManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(WatchManager.class);
 
+    //path -> Set<Watcher>
     private final Map<String, Set<Watcher>> watchTable = new HashMap<>();
 
+    //Watcher -> Set<Path>
     private final Map<Watcher, Set<String>> watch2Paths = new HashMap<>();
 
     private final WatcherModeManager watcherModeManager = new WatcherModeManager();

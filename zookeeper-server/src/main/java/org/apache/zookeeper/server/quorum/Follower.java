@@ -83,7 +83,7 @@ public class Follower extends Learner {
         boolean completedSync = false;
 
         try {
-            self.setZabState(QuorumPeer.ZabState.DISCOVERY);
+            self.setZabState(QuorumPeer.ZabState.DISCOVERY);        //QuorumPeer.ZabState.DISCOVERY
             QuorumServer leaderServer = findLeader();
             try {
                 connectToLeader(leaderServer.addr, leaderServer.hostname);
@@ -105,9 +105,9 @@ public class Follower extends Learner {
                 long startTime = Time.currentElapsedTime();
                 try {
                     self.setLeaderAddressAndId(leaderServer.addr, leaderServer.getId());
-                    self.setZabState(QuorumPeer.ZabState.SYNCHRONIZATION);
+                    self.setZabState(QuorumPeer.ZabState.SYNCHRONIZATION);      //ZabState.SYNCHRONIZATION
                     syncWithLeader(newEpochZxid);
-                    self.setZabState(QuorumPeer.ZabState.BROADCAST);
+                    self.setZabState(QuorumPeer.ZabState.BROADCAST);            //ZabState.BROADCAST
                     completedSync = true;
                 } finally {
                     long syncTime = Time.currentElapsedTime() - startTime;
@@ -116,11 +116,13 @@ public class Follower extends Learner {
                 if (self.getObserverMasterPort() > 0) {
                     LOG.info("Starting ObserverMaster");
 
+                    //ObserverMaster与Observer通信，进行数据同步
                     om = new ObserverMaster(self, fzk, self.getObserverMasterPort());
                     om.start();
                 } else {
                     om = null;
                 }
+                //处理Leader发送的packet，包括proposal/commit/ping等
                 // create a reusable packet to reduce gc impact
                 QuorumPacket qp = new QuorumPacket();
                 while (this.isRunning()) {

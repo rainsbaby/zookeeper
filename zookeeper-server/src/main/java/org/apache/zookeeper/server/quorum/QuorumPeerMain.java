@@ -125,6 +125,7 @@ public class QuorumPeerMain {
             config.parse(args[0]);
         }
 
+        //定时删除translog和snapshot文件，只保留最新的n个文件
         // Start and schedule the the purge task
         DatadirCleanupManager purgeMgr = new DatadirCleanupManager(
             config.getDataDir(),
@@ -133,6 +134,7 @@ public class QuorumPeerMain {
             config.getPurgeInterval());
         purgeMgr.start();
 
+        //集群模式 or standalone 模式运行
         if (args.length == 1 && config.isDistributed()) {
             runFromConfig(config);
         } else {
@@ -149,6 +151,7 @@ public class QuorumPeerMain {
             LOG.warn("Unable to register log4j JMX control", e);
         }
 
+        //收集数据并上传，可配置上传到prometheus
         LOG.info("Starting quorum peer, myid=" + config.getServerId());
         final MetricsProvider metricsProvider;
         try {
@@ -160,7 +163,7 @@ public class QuorumPeerMain {
         }
         try {
             ServerMetrics.metricsProviderInitialized(metricsProvider);
-            ProviderRegistry.initialize();
+            ProviderRegistry.initialize();  //初始化AuthenticationProviderMap
             ServerCnxnFactory cnxnFactory = null;
             ServerCnxnFactory secureCnxnFactory = null;
 

@@ -79,6 +79,7 @@ public class FileTxnSnapLog {
     private static final String EMPTY_SNAPSHOT_WARNING = "No snapshot found, but there are log entries. ";
 
     /**
+     * datatree restores时调用
      * This listener helps
      * the external apis calling
      * restore to gather information
@@ -92,6 +93,7 @@ public class FileTxnSnapLog {
     }
 
     /**
+     *
      * Finalizing restore of data tree through
      * a set of operations (replaying transaction logs,
      * calculating data tree digests, and so on.).
@@ -239,6 +241,9 @@ public class FileTxnSnapLog {
     }
 
     /**
+     * 读取snapshot和transaction log，重置datatree和sessions
+     * 一般在zkserver启动时调用
+     *
      * this function restores the server
      * database after reading from the
      * snapshots and transaction logs
@@ -264,7 +269,7 @@ public class FileTxnSnapLog {
         }
 
         RestoreFinalizer finalizer = () -> {
-            long highestZxid = fastForwardFromEdits(dt, sessions, listener);
+            long highestZxid = FileTxnSnapLog.this.fastForwardFromEdits(dt, sessions, listener);
             // The snapshotZxidDigest will reset after replaying the txn of the
             // zxid in the snapshotZxidDigest, if it's not reset to null after
             // restoring, it means either there are not enough txns to cover that
@@ -313,6 +318,8 @@ public class FileTxnSnapLog {
     }
 
     /**
+     * 重播transactions
+     *
      * This function will fast forward the server database to have the latest
      * transactions in it.  This is the same as restore, but only reads from
      * the transaction logs and not restores from a snapshot.

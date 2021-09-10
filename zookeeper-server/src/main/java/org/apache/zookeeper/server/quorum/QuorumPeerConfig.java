@@ -740,6 +740,7 @@ public class QuorumPeerConfig {
         }
         try {
             serverId = Long.parseLong(myIdString);
+            LOG.info("myid: {}", serverId);
             MDC.put("myid", myIdString);
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("serverid " + myIdString + " is not a number");

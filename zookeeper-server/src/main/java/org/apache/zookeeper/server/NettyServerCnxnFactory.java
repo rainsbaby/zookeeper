@@ -727,10 +727,13 @@ public class NettyServerCnxnFactory extends ServerCnxnFactory {
 
     @Override
     public void startup(ZooKeeperServer zks, boolean startServer) throws IOException, InterruptedException {
+        //启动网络监听
         start();
         setZooKeeperServer(zks);
         if (startServer) {
+            //从磁盘加载trxnlog及snapshot
             zks.startdata();
+            //启动zk的SessionTracker、RequestProcessor、限流RequestThrottler等
             zks.startup();
         }
     }

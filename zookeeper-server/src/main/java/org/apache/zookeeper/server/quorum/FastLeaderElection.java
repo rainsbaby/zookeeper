@@ -436,7 +436,7 @@ public class FastLeaderElection implements Election {
                                 if (ackstate == QuorumPeer.ServerState.LOOKING) {
                                     if (self.leader != null) {
                                         if (leadingVoteSet != null) {
-                                            self.leader.setLeadingVoteSet(leadingVoteSet);
+                                            self.leader.setLeadingVoteSet(leadingVoteSet);  //todo: what's for?
                                             leadingVoteSet = null;
                                         }
                                         self.leader.reportLookingSid(response.sid);
@@ -812,6 +812,7 @@ public class FastLeaderElection implements Election {
         return predicate;
     }
 
+    //更新自己的选票。之后要通过sendNotifications 通知其他voter
     synchronized void updateProposal(long leader, long zxid, long epoch) {
         LOG.debug(
             "Updating proposal: {} (newleader), 0x{} (newzxid), {} (oldleader), 0x{} (oldzxid)",
@@ -847,6 +848,7 @@ public class FastLeaderElection implements Election {
     }
 
     /**
+     * 参与选举的Server，在选举时首先投票给自己
      * Returns the initial vote value of server identifier.
      *
      * @return long
@@ -904,6 +906,7 @@ public class FastLeaderElection implements Election {
     }
 
     /**
+     * 触发一轮选举
      * Starts a new round of leader election. Whenever our QuorumPeer
      * changes its state to LOOKING, this method is invoked, and it
      * sends notifications to all other peers.
@@ -939,6 +942,7 @@ public class FastLeaderElection implements Election {
 
             synchronized (this) {
                 logicalclock.incrementAndGet();
+                //第一轮的选票。参与选举的Server，第一轮时都投票给自己
                 updateProposal(getInitId(), getInitLastLoggedZxid(), getPeerEpoch());
             }
 
@@ -1041,6 +1045,7 @@ public class FastLeaderElection implements Election {
                              * relevant message from the reception queue
                              */
                             if (n == null) {
+                                //proposed leader没有变化，则更新节点状态
                                 setPeerState(proposedLeader, voteSet);
                                 Vote endVote = new Vote(proposedLeader, proposedZxid, logicalclock.get(), proposedEpoch);
                                 leaveInstance(endVote);

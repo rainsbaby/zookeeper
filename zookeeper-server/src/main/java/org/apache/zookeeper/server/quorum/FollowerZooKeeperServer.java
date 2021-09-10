@@ -68,6 +68,8 @@ public class FollowerZooKeeperServer extends LearnerZooKeeperServer {
 
     @Override
     protected void setupRequestProcessors() {
+        //FollowerRequestProcessor -> CommitProcessor -> FinalRequestProcessor 处理Commit/Query
+        //SyncRequestProcessor -> SendAckRequestProcessor 负责处理Proposal请求
         RequestProcessor finalProcessor = new FinalRequestProcessor(this);
         commitProcessor = new CommitProcessor(finalProcessor, Long.toString(getServerId()), true, getZooKeeperServerListener());
         commitProcessor.start();

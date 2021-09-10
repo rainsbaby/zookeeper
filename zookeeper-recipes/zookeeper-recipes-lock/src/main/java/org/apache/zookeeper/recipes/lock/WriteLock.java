@@ -33,6 +33,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * 实现分布式写锁的方式是，每个节点都在路径dir下建立子节点，子节点按照id排序，最大的id获得写锁。
+ * 同时，第二大的id监听最大的id对应节点变化，当最大的id节点被删除时，重新发起lock请求，即由第二大的id节点获得写锁。
+ *
  * A <a href="package.html">protocol to implement an exclusive
  *  write lock or to elect a leader</a>.
  *

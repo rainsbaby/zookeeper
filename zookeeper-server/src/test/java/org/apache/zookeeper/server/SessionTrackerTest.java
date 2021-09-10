@@ -153,4 +153,13 @@ public class SessionTrackerTest extends ZKTestCase {
 
     }
 
+    @Test
+    public void testId(){
+        System.out.println(-1>>>1);
+        System.out.println(Integer.MAX_VALUE);
+        System.out.println(Integer.MIN_VALUE);
+        System.out.println(-1024>>2);
+
+    }
+
 }

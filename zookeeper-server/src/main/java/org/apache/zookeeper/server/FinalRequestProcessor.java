@@ -423,7 +423,7 @@ public class FinalRequestProcessor implements RequestProcessor {
                 AddWatchRequest addWatcherRequest = new AddWatchRequest();
                 ByteBufferInputStream.byteBuffer2Record(request.request,
                         addWatcherRequest);
-                zks.getZKDatabase().addWatch(addWatcherRequest.getPath(), cnxn, addWatcherRequest.getMode());
+                zks.getZKDatabase().addWatch(addWatcherRequest.getPath(), cnxn, addWatcherRequest.getMode()); // Watcher 为ServerCnxn，即由ServerCnxn处理watchEvent（通知client）
                 rsp = new ErrorResponse(0);
                 break;
             }
@@ -607,7 +607,7 @@ public class FinalRequestProcessor implements RequestProcessor {
 
         try {
             if (path == null || rsp == null) {
-                responseSize = cnxn.sendResponse(hdr, rsp, "response");
+                responseSize = cnxn.sendResponse(hdr, rsp, "response");  // 发送response
             } else {
                 int opCode = request.type;
                 Stat stat = null;

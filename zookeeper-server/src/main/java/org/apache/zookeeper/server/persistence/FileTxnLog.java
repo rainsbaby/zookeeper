@@ -266,6 +266,15 @@ public class FileTxnLog implements TxnLog, Closeable {
               return append(hdr, txn, null);
     }
 
+    /**
+     * TxnHeader + TxnChecksum + Txn
+     * @param hdr the transaction header
+     * @param txn
+     * @param digest transaction digest
+     * returns true iff something appended, otw false
+     * @return
+     * @throws IOException
+     */
     @Override
     public synchronized boolean append(TxnHeader hdr, Record txn, TxnDigest digest) throws IOException {
         if (hdr == null) {

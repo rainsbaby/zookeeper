@@ -91,7 +91,7 @@ public class ZKDatabase {
     public static final int DEFAULT_COMMIT_LOG_COUNT = 500;
     public int commitLogCount;
     protected static int commitLogBuffer = 700;
-    protected Queue<Proposal> committedLog = new ArrayDeque<>();
+    protected Queue<Proposal> committedLog = new ArrayDeque<>(); //用于Leader向Learner同步proposal
     protected ReentrantReadWriteLock logLock = new ReentrantReadWriteLock();
     private volatile boolean initialized = false;
 

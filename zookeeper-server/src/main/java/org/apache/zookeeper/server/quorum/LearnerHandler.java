@@ -57,6 +57,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Leader与其他Learner的通信，进行数据同步，为每个learner对应一个LearnerHandler
  * There will be an instance of this class created by the Leader for each
  * learner. All communication with a learner is handled by this
  * class.
@@ -620,6 +621,7 @@ public class LearnerHandler extends ZooKeeperThread {
 
             LOG.debug("Received NEWLEADER-ACK message from {}", sid);
 
+            //等待超过半数的learner ack 新leader
             learnerMaster.waitForNewLeaderAck(getSid(), qp.getZxid());
 
             syncLimitCheck.start();
@@ -647,6 +649,7 @@ public class LearnerHandler extends ZooKeeperThread {
             LOG.debug("Sending UPTODATE message to {}", sid);
             queuedPackets.add(new QuorumPacket(Leader.UPTODATE, -1, null, null));
 
+            //zk sync并startup完成后，后续的sync过程
             while (true) {
                 qp = new QuorumPacket();
                 ia.readRecord(qp, "packet");

@@ -34,6 +34,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * 分布式队列的实现逻辑是，在dir目录下建立子节点，子节点目录排序后形成的队列作为分布式队列
+ *
  * A <a href="package.html">protocol to implement a distributed queue</a>.
  */
 public class DistributedQueue {

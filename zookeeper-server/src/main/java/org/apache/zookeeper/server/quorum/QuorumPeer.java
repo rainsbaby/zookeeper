@@ -1127,16 +1127,22 @@ public class QuorumPeer extends ZooKeeperThread implements QuorumStats.Provider 
         if (!getView().containsKey(myid)) {
             throw new RuntimeException("My id " + myid + " not in the peer list");
         }
+        //从磁盘文件加载datatreee、snapshot、translog
         loadDataBase();
+        //启动网络连接ServerCnxnFactory
         startServerCnxnFactory();
         try {
+            //adminServer负责处理四字命令
             adminServer.start();
         } catch (AdminServerException e) {
             LOG.warn("Problem starting AdminServer", e);
             System.out.println(e);
         }
+        //开始选举
         startLeaderElection();
+        //启动JvmPauseMonitor
         startJvmPauseMonitor();
+        //主流程，进行looking/observing/following/leading状态下的处理
         super.start();
     }
 
@@ -1447,7 +1453,7 @@ public class QuorumPeer extends ZooKeeperThread implements QuorumStats.Provider 
                                 try {
                                     // lower-bound grace period to 2 secs
                                     sleep(Math.max(2000, tickTime));
-                                    if (ServerState.LOOKING.equals(getPeerState())) {
+                                    if (ServerState.LOOKING.equals(getPeerState())) {   //2s后还没有完成选举，则认为发生了脑裂
                                         roZk.startup();
                                     }
                                 } catch (InterruptedException e) {
@@ -1458,7 +1464,7 @@ public class QuorumPeer extends ZooKeeperThread implements QuorumStats.Provider 
                             }
                         };
                         try {
-                            roZkMgr.start();
+                            roZkMgr.start();    //超过2s还没有完成选举，则启动ReadOnlyZooKeeperServer，其中有ReadOnlyRequestProcessor，只处理读请求
                             reconfigFlagClear();
                             if (shuttingDownLE) {
                                 shuttingDownLE = false;
@@ -1471,8 +1477,8 @@ public class QuorumPeer extends ZooKeeperThread implements QuorumStats.Provider 
                         } finally {
                             // If the thread is in the the grace period, interrupt
                             // to come out of waiting.
-                            roZkMgr.interrupt();
-                            roZk.shutdown();
+                            roZkMgr.interrupt();    //标记interrupt
+                            roZk.shutdown();        //处于可以shutdown（非running，非error）状态时，才进行shutdown
                         }
                     } else {
                         try {
@@ -2327,6 +2333,11 @@ public class QuorumPeer extends ZooKeeperThread implements QuorumStats.Provider 
         nextObserverMaster = 0;
     }
 
+    /**
+     * 开启此开关表示，由Followers代替Leader来同步数据到Observer
+     * 开启后，Follower端创建一个ObserverMaster线程服务Observer。可以减轻Leader的压力，提高Observer的性能
+     * @return
+     */
     private boolean useObserverMasters() {
         return getLearnerType() == LearnerType.OBSERVER && observerMasters.size() > 0;
     }

@@ -121,6 +121,7 @@ public class QuorumCnxManager {
      */
     // the following protocol version was sent in every connection initiation message since ZOOKEEPER-107 released in 3.5.0
     public static final long PROTOCOL_VERSION_V1 = -65536L;
+    //todo: multiple addresses的主要区别是什么？
     // ZOOKEEPER-3188 introduced multiple addresses in the connection initiation message, released in 3.6.0
     public static final long PROTOCOL_VERSION_V2 = -65535L;
 

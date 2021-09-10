@@ -32,6 +32,8 @@
  import org.slf4j.LoggerFactory;
 
  /**
+  * todo！！！！
+  *
   * a class that implements prefix matching for
   * components of a filesystem path. the trie
   * looks like a tree with edges mapping to
@@ -143,12 +145,14 @@
                  // Node no longer has an external property associated
                  childNode.setProperty(false);
 
+                 //只对叶子节点执行删除操作
                  // Delete it if it has no children (is a leaf node)
                  if (childNode.isLeafNode()) {
                      childNode.setParent(null);
                      return null;
                  }
 
+                 //对非叶子节点，不执行删除操作
                  return childNode;
              });
          }
@@ -291,6 +295,7 @@
      }
 
      /**
+      * 寻找最大匹配前缀
       * Return the largest prefix for the input path. All paths are relative to the
       * root node.
       *

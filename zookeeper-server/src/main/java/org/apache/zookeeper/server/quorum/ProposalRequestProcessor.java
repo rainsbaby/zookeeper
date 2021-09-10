@@ -79,6 +79,7 @@ public class ProposalRequestProcessor implements RequestProcessor {
             if (shouldForwardToNextProcessor(request)) {
                 nextProcessor.processRequest(request);
             }
+            //事务类型Request
             if (request.getHdr() != null) {
                 // We need to sync and get consensus on any transactions
                 try {

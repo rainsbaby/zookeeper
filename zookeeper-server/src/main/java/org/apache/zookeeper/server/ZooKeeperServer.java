@@ -92,10 +92,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This class implements a simple standalone ZooKeeperServer. It sets up the
- * following chain of RequestProcessors to process requests:
+ * following chain of RequestProcessors to process requests:z
  * PrepRequestProcessor -&gt; SyncRequestProcessor -&gt; FinalRequestProcessor
  */
-public class ZooKeeperServer implements SessionExpirer, ServerStats.Provider {
+public class  ZooKeeperServer implements SessionExpirer, ServerStats.Provider {
 
     protected static final Logger LOG;
     private static final RateLogger RATE_LOGGER;
@@ -263,6 +263,7 @@ public class ZooKeeperServer implements SessionExpirer, ServerStats.Provider {
     // Connection throttling
     private BlueThrottle connThrottle = new BlueThrottle();
 
+    //限流
     @SuppressFBWarnings(value = "IS2_INCONSISTENT_SYNC", justification =
         "Internally the throttler has a BlockingQueue so "
         + "once the throttler is created and started, it is thread-safe")
@@ -702,8 +703,11 @@ public class ZooKeeperServer implements SessionExpirer, ServerStats.Provider {
             createSessionTracker();
         }
         startSessionTracker();
+
+        //requestProcessor的pipeline，每个requestProcessor处理完成后交给nextProcessor
         setupRequestProcessors();
 
+        //限流
         startRequestThrottler();
 
         registerJMX();

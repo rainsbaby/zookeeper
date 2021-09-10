@@ -33,6 +33,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Leader 选举的逻辑是，每个client请求在dir目录下建立子节点，由子节点id最小者作为leader。
+ * 同时，第二小的id节点监听leader节点，当leader节点被删除时，由第二个节点作为leader。
+ *
  * A leader election support library implementing the ZooKeeper election recipe.
  *
  * <p>This support library is meant to simplify the construction of an exclusive

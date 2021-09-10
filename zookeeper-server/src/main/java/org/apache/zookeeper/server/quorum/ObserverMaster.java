@@ -48,6 +48,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * 开启QuorumPeer.ObserverMaster开关表示，由Followers代替Leader来同步数据到Observer
+ * 开启后，Follower端创建一个ObserverMaster线程服务Observer。可以减轻Leader的压力，提高Observer的性能
+ * 若开关未开启，Observer直接与Leader连接
+ *
  * Used by Followers to host Observers. This reduces the network load on the Leader process by pushing
  * the responsibility for keeping Observers in sync off the leading peer.
  *

@@ -21,12 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
@@ -37,7 +32,9 @@ import org.apache.zookeeper.metrics.MetricsUtils;
 import org.apache.zookeeper.server.DumbWatcher;
 import org.apache.zookeeper.server.ServerCnxn;
 import org.apache.zookeeper.server.ServerMetrics;
+import org.apache.zookeeper.server.util.BitMap;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -470,4 +467,20 @@ public class WatchManagerTest extends ZKTestCase {
         checkMetrics("node_created_watch_count", 1L, 2L, 1.5D, 2L, 3L);
     }
 
+
+    @Test
+    public void testBitset(){
+        BitMap<Integer> bitMap = new BitMap<>();
+        System.out.println("bitset : " + bitMap.add(5));
+        System.out.println("bitset : " + bitMap.add(6));
+        bitMap.remove(new Integer(5));
+        System.out.println("bitset : " + bitMap.add(7));
+        System.out.println("bitset : " + bitMap.add(6));
+        System.out.println("bitset : " + bitMap.add(8));
+
+
+        BitSet freedBitSet = new BitSet();
+        System.out.println("bitset : " + freedBitSet.nextSetBit(0));
+        System.out.println("bitset : " + freedBitSet.nextSetBit(0));
+    }
 }

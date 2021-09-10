@@ -296,7 +296,7 @@ public class SnapStream {
             int readlen = 0;
             int l;
             while (readlen < 5 && (l = raf.read(bytes, readlen, bytes.length - readlen)) >= 0) {
-                readlen += l;
+                readlen += l;  //by guixian：readlen++，是否有问题？ -> 看错了。。readlen += l（不是1）
             }
             if (readlen != bytes.length) {
                 LOG.info("Invalid snapshot {}. too short, len = {} bytes", f.getName(), readlen);
